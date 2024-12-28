@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import re
 
 from .regexanalyzer import RegexAnalyzer
@@ -11,8 +10,10 @@ class IBANAnalyzer(RegexAnalyzer):
 
     def __init__(self, actions, validate=False):
         # Regex adapted from https://stackoverflow.com/a/44657292/3621482
-        regex = r"(?:[A-Z]{2}[ \-]?[0-9]{2})(?!=(?:[ \-]?[A-Z0-9]){9,30}$)" \
-                r"(?:(?:[ \-]?[A-Z0-9]{3,5}){2,7})(?:[ \-]?[A-Z0-9]{1,3})?"
+        regex = (
+            r"(?:[A-Z]{2}[ \-]?[0-9]{2})(?!=(?:[ \-]?[A-Z0-9]){9,30}$)"
+            r"(?:(?:[ \-]?[A-Z0-9]{3,5}){2,7})(?:[ \-]?[A-Z0-9]{1,3})?"
+            )
         super().__init__(actions, regex)
         self.validate = validate
 
@@ -21,12 +22,7 @@ class IBANAnalyzer(RegexAnalyzer):
         if not self.validate:
             return results
 
-        validated_ibans = []
-        for possible_iban in results:
-            if self._validate_iban(possible_iban):
-                validated_ibans.append(possible_iban)
-
-        return validated_ibans
+        return [iban for iban in results if self._validate_iban(iban)]
 
     def _validate_iban(self, potential_iban):
         """Checks if the given string could be a valid IBAN. Adapted from https://rosettacode.org/wiki/IBAN#Python."""

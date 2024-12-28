@@ -1,19 +1,18 @@
-# -*- coding: utf-8 -*-
 import logging
 import sys
 from queue import Queue
-from signal import signal, SIGINT, SIGTERM, SIGABRT
+from signal import SIGABRT, SIGINT, SIGTERM, signal
 from threading import Event
 from time import sleep
 
 from pastepwn.actions import DatabaseAction
 from pastepwn.analyzers import AlwaysTrueAnalyzer
-from pastepwn.core import ScrapingHandler, ActionHandler, PasteDispatcher
-from pastepwn.util import Request, enforce_ip_version
+from pastepwn.core import ActionHandler, PasteDispatcher, ScrapingHandler
 from pastepwn.scraping.pastebin import PastebinScraper
+from pastepwn.util import Request, enforce_ip_version
 
 
-class PastePwn(object):
+class PastePwn:
     """Represents an instance of the pastepwn core module"""
 
     def __init__(self, database=None, proxies=None, store_all_pastes=True, ip_version=None):
@@ -43,18 +42,14 @@ class PastePwn(object):
             ip = self.__request.get("https://api.ipify.org")
         except Exception as e:
             ip = None
-            self.logger.warning("Could not fetch public IP via ipify: {0}".format(e))
+            self.logger.warning(f"Could not fetch public IP via ipify: {e}")
 
         if ip:
-            self.logger.info("Your public IP is {0}".format(ip))
+            self.logger.info(f"Your public IP is {ip}")
 
-        self.scraping_handler = ScrapingHandler(paste_queue=self.paste_queue,
-                                                exception_event=self.__exception_event)
-        self.paste_dispatcher = PasteDispatcher(paste_queue=self.paste_queue,
-                                                action_queue=self.action_queue,
-                                                exception_event=self.__exception_event)
-        self.action_handler = ActionHandler(action_queue=self.action_queue,
-                                            exception_event=self.__exception_event)
+        self.scraping_handler = ScrapingHandler(paste_queue=self.paste_queue, exception_event=self.__exception_event)
+        self.paste_dispatcher = PasteDispatcher(paste_queue=self.paste_queue, action_queue=self.action_queue, exception_event=self.__exception_event)
+        self.action_handler = ActionHandler(action_queue=self.action_queue, exception_event=self.__exception_event)
 
         if self.database is not None and store_all_pastes:
             # Save every paste to the database with the AlwaysTrueAnalyzer
@@ -118,8 +113,8 @@ class PastePwn(object):
         for onstart_handler in self.onstart_handlers:
             try:
                 onstart_handler()
-            except Exception as e:
-                self.logger.error("Onstart handler %s failed with error: %s. Pastepwn is still running." % (onstart_handler.__name__, e))
+            except Exception:
+                self.logger.exception("Onstart handler %s failed. Pastepwn is still running.", onstart_handler.__name__)
 
     def stop(self):
         """Stops the pastepwn instance"""
@@ -131,7 +126,7 @@ class PastePwn(object):
     def signal_handler(self, signum, frame):
         """Handler method to handle signals"""
         self.is_idle = False
-        self.logger.info("Received signal {}, stopping...".format(signum))
+        self.logger.info(f"Received signal {signum}, stopping...")
         self.stop()
 
     def idle(self, stop_signals=(SIGINT, SIGTERM, SIGABRT)):

@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 from .regexanalyzer import RegexAnalyzer
 
 
 class AWSSessionTokenAnalyzer(RegexAnalyzer):
     """Analyzer to match AWS Session Token via regex."""
+
     name = "AWSSessionTokenAnalyzer"
 
     def __init__(self, actions):

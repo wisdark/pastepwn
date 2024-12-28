@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import unittest
 from unittest import mock
 
@@ -6,7 +5,6 @@ from pastepwn.analyzers.mailchimpapikeyanalyzer import MailChimpApiKeyAnalyzer
 
 
 class TestMailChimpApiKeyAnalyzer(unittest.TestCase):
-
     def setUp(self):
         self.analyzer = MailChimpApiKeyAnalyzer(None)
         self.paste = mock.Mock()

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 def listify(obj):
     """Make sure the given object is a list
 

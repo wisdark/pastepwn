@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
 from pastepwn.util import Request
+
 from .basicaction import BasicAction
 
 
 class WebhookAction(BasicAction):
     """Action to perform a Webhook on a matched paste"""
+
     name = "WebhookAction"
 
     def __init__(self, url, post_data=True):

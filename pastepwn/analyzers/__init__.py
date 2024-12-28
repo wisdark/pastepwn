@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .adobekeyanalyzer import AdobeKeyAnalyzer
 from .alwaystrueanalyzer import AlwaysTrueAnalyzer
 from .awsaccesskeyanalyzer import AWSAccessKeyAnalyzer
@@ -20,9 +19,7 @@ from .googleapikeyanalyzer import GoogleApiKeyAnalyzer
 from .googleoauthkeyanalyzer import GoogleOAuthKeyAnalyzer
 from .hashanalyzer import HashAnalyzer
 from .ibananalyzer import IBANAnalyzer
-from .logicalanalyzers import AndAnalyzer
-from .logicalanalyzers import LogicalBaseAnalyzer
-from .logicalanalyzers import OrAnalyzer
+from .logicalanalyzers import AndAnalyzer, LogicalBaseAnalyzer, OrAnalyzer
 from .mailanalyzer import MailAnalyzer
 from .mailchimpapikeyanalyzer import MailChimpApiKeyAnalyzer
 from .md5hashanalyzer import MD5HashAnalyzer
@@ -43,12 +40,12 @@ from .urlanalyzer import URLAnalyzer
 from .wordanalyzer import WordAnalyzer
 
 __all__ = [
+    "AWSAccessKeyAnalyzer",
+    "AWSSecretKeyAnalyzer",
+    "AWSSessionTokenAnalyzer",
     "AdobeKeyAnalyzer",
     "AlwaysTrueAnalyzer",
     "AndAnalyzer",
-    "AWSSecretKeyAnalyzer",
-    "AWSAccessKeyAnalyzer",
-    "AWSSessionTokenAnalyzer",
     "AzureSubscriptionKeyAnalyzer",
     "Base64Analyzer",
     "Base64AsciiAnalyzer",
@@ -56,8 +53,8 @@ __all__ = [
     "BattleNetKeyAnalyzer",
     "BcryptHashAnalyzer",
     "CreditCardAnalyzer",
-    "DatabaseDumpAnalyzer",
     "DBConnAnalyzer",
+    "DatabaseDumpAnalyzer",
     "EmailPasswordPairAnalyzer",
     "FacebookAccessTokenAnalyzer",
     "GenericAnalyzer",
@@ -66,9 +63,9 @@ __all__ = [
     "HashAnalyzer",
     "IBANAnalyzer",
     "LogicalBaseAnalyzer",
+    "MD5HashAnalyzer",
     "MailAnalyzer",
     "MailChimpApiKeyAnalyzer",
-    "MD5HashAnalyzer",
     "MegaLinkAnalyzer",
     "MicrosoftKeyAnalyzer",
     "OrAnalyzer",
@@ -82,7 +79,7 @@ __all__ = [
     "SlackWebhookAnalyzer",
     "SteamKeyAnalyzer",
     "StripeApiKeyAnalyzer",
-    "WordAnalyzer",
-    "UplayKeyAnalyzer",
     "URLAnalyzer",
-    ]
+    "UplayKeyAnalyzer",
+    "WordAnalyzer",
+]

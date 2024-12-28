@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 import pymongo
@@ -8,19 +7,18 @@ from .abstractdb import AbstractDB
 
 
 class MongoDB(AbstractDB):
-
     def __init__(self, ip="127.0.0.1", port=27017, dbname="pastepwn", collectionname="pastes"):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self.logger.debug("Initializing MongoDB - {0}:{1}".format(ip, port))
+        self.logger.debug(f"Initializing MongoDB - {ip}:{port}")
         timeout_ms = 5000
         self.db = pymongo.MongoClient(ip, port, serverSelectionTimeoutMS=timeout_ms)
 
         try:
             self.db.admin.command("ismaster")
-        except ConnectionFailure as e:
-            self.logger.error(e)
-            raise e
+        except ConnectionFailure:
+            self.logger.exception("An exception occurred while initializing the database")
+            raise
 
         self.logger.debug("Connected to database!")
 
@@ -45,12 +43,12 @@ class MongoDB(AbstractDB):
         return self.collection.count()
 
     def store(self, paste):
-        self.logger.debug("Storing paste {0}".format(paste.key))
+        self.logger.debug(f"Storing paste {paste.key}")
 
         try:
             self._insert_data(paste.to_dict())
         except pymongo.errors.DuplicateKeyError:
-            self.logger.debug("Duplicate key '{0}' - Not storing paste".format(paste.key))
+            self.logger.debug(f"Duplicate key '{paste.key}' - Not storing paste")
 
     def get(self, key):
         return self._get_data("key", key)

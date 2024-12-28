@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 from pastepwn.analyzers.basicanalyzer import BasicAnalyzer
 from pastepwn.util import listify
 
 
 class LogicalBaseAnalyzer(BasicAnalyzer):
     """Meta analyzer used to combine analyzers via a logical operator"""
+
     name = "LogicalBaseAnalyzer"
 
     def __init__(self, actions, analyzers, merge_actions=False):
@@ -17,7 +17,7 @@ class LogicalBaseAnalyzer(BasicAnalyzer):
         self.analyzers = listify(analyzers)
 
         if not self.analyzers:
-            self.logger.warning("You have not specified any analyzers inside '{}'".format(self.name))
+            self.logger.warning(f"You have not specified any analyzers inside '{self.name}'")
 
         if merge_actions:
             self._merge_actions()

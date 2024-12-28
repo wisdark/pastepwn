@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from .basicaction import BasicAction
@@ -6,6 +5,7 @@ from .basicaction import BasicAction
 
 class LogAction(BasicAction):
     """Action to log a paste to console"""
+
     name = "LogAction"
 
     def __init__(self):
@@ -13,4 +13,4 @@ class LogAction(BasicAction):
         self.logger = logging.getLogger(__name__)
 
     def perform(self, paste, analyzer_name=None, matches=None):
-        self.logger.debug("New Paste matched: {0}".format(paste))
+        self.logger.debug(f"New Paste matched: {paste}")

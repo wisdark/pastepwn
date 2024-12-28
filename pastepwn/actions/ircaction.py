@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 import select
 import socket
@@ -7,7 +6,8 @@ from threading import Event
 from time import sleep
 
 from pastepwn.util import TemplatingEngine
-from pastepwn.util.threadingutils import start_thread, join_threads
+from pastepwn.util.threadingutils import join_threads, start_thread
+
 from .basicaction import BasicAction
 
 MAX_MSG_SIZE = 512
@@ -15,6 +15,7 @@ MAX_MSG_SIZE = 512
 
 class IrcAction(BasicAction):
     """Action to send an irc message to a certain channel"""
+
     name = "IrcAction"
 
     def __init__(self, server=None, channel=None, port=6667, nick="pastepwn", template=None):
@@ -30,11 +31,11 @@ class IrcAction(BasicAction):
         self.template = template
 
         if not channel.startswith("#"):
-            channel = "#{0}".format(channel)
+            channel = f"#{channel}"
         self.channel = channel
 
         # RFC1459 says that each message can only be 512 bytes including the CR-LF character
-        self._max_payload_size = MAX_MSG_SIZE - len("PRIVMSG {0}".format(channel)) - len("\r\n")
+        self._max_payload_size = MAX_MSG_SIZE - len(f"PRIVMSG {channel}") - len("\r\n")
 
         self._exception_event = Event()
         self._stop_event = Event()
@@ -65,8 +66,8 @@ class IrcAction(BasicAction):
 
                 # Split up the data in single IRC messages to handle them separately
                 while "\r\n" in data:
-                    message = data[:data.index("\r\n")]
-                    data = data[data.index("\r\n") + 2:]
+                    message = data[: data.index("\r\n")]
+                    data = data[data.index("\r\n") + 2 :]
                     self._handle_message(message)
 
             # We use the _stop_event to kill our thread
@@ -83,8 +84,8 @@ class IrcAction(BasicAction):
             except Empty:
                 continue
 
-            self.logger.debug("New message on msg_queue: {0}".format(msg))
-            self._send("PRIVMSG {0} :{1}".format(self.channel, msg))
+            self.logger.debug(f"New message on msg_queue: {msg}")
+            self._send(f"PRIVMSG {self.channel} :{msg}")
 
     def _handle_message(self, message):
         """
@@ -92,7 +93,7 @@ class IrcAction(BasicAction):
         :param message: A messare received from the IRC server
         :return:
         """
-        self.logger.debug("Server message: {}".format(message))
+        self.logger.debug(f"Server message: {message}")
         words = message.split(" ")
 
         if message.startswith("PING"):
@@ -117,9 +118,9 @@ class IrcAction(BasicAction):
         :return: None
         """
         try:
-            self.ircsock.send(bytes("{0}\r\n".format(data), "UTF-8"))
-        except ConnectionAbortedError as e:
-            self.logger.error("Connection to IRC server lost: ", e)
+            self.ircsock.send(bytes(f"{data}\r\n", "UTF-8"))
+        except ConnectionAbortedError:
+            self.logger.exception("Connection to IRC server lost")
             self._reconnect()
 
     def _reconnect(self):
@@ -133,8 +134,8 @@ class IrcAction(BasicAction):
         while True:
             try:
                 self._connect()
-            except Exception as e:
-                self.logger.error("Exception while trying to connect to the IRC server occurred: ", e)
+            except Exception:
+                self.logger.exception("Exception while trying to connect to the IRC server occurred")
                 self.logger.info("Sleeping for 10 seconds before trying next reconnect!")
                 sleep(10)
             else:
@@ -146,7 +147,7 @@ class IrcAction(BasicAction):
         Connect to the IRC Server
         :return: None
         """
-        self.logger.debug("Connecting to IRC server '{}:{}' using nick {}.".format(self.server, self.port, self.nick))
+        self.logger.debug(f"Connecting to IRC server '{self.server}:{self.port}' using nick {self.nick}.")
         self.ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ircsock.connect((self.server, self.port))
 
@@ -155,26 +156,26 @@ class IrcAction(BasicAction):
         Send login data to the IRC server
         :return:
         """
-        self._send("NICK {}".format(self.nick))
-        self._send("USER {} 8 * :{}".format(self.nick, self.nick))
+        self._send(f"NICK {self.nick}")
+        self._send(f"USER {self.nick} 8 * :{self.nick}")
 
     def _join(self):
         """
         Joins an IRC channel
         :return: None
         """
-        self.logger.debug("Joining channel '{}' on '{}:{}' using nick {}.".format(self.channel, self.server, self.port, self.nick))
-        self._send("JOIN {}".format(self.channel))
+        self.logger.debug(f"Joining channel '{self.channel}' on '{self.server}:{self.port}' using nick {self.nick}.")
+        self._send(f"JOIN {self.channel}")
 
     def _quit(self, msg=None):
         """
         Quit from an IRC server
         :return: None
         """
-        self.logger.info("Sending QUIT message to the server '{}:{}' from nick '{}'".format(self.server, self.port, self.nick))
+        self.logger.info(f"Sending QUIT message to the server '{self.server}:{self.port}' from nick '{self.nick}'")
         if msg is not None and msg != "":
             msg = msg.replace("\r\n", " ").replace("\r", " ").replace("\n", " ")
-            self._send("QUIT :{}".format(msg))
+            self._send(f"QUIT :{msg}")
         else:
             self._send("QUIT")
 
@@ -184,7 +185,7 @@ class IrcAction(BasicAction):
         :return: None
         """
         self.logger.debug("Server PING received. Replying to server with PONG.")
-        self._send("PONG :{}".format(self.nick))
+        self._send(f"PONG :{self.nick}")
 
     def _send_message(self, msg):
         """
@@ -200,8 +201,8 @@ class IrcAction(BasicAction):
         msg = msg.replace("\n", " ")
         if len(msg) > self._max_payload_size:
             # We need to split up the message into two parts and send it recursively
-            self._send_message(msg[:self._max_payload_size])
-            self._send_message(msg[self._max_payload_size:])
+            self._send_message(msg[: self._max_payload_size])
+            self._send_message(msg[self._max_payload_size :])
             return
 
         # Otherwise we can simply put it on the queue as a whole
@@ -214,7 +215,6 @@ class IrcAction(BasicAction):
     def perform(self, paste, analyzer_name=None, matches=None):
         """Perform the action on the passed paste"""
         if self._exception_event.is_set():
-            self.logger.error("The exception event is set. The IRC action might not perform as it should! Messages will"
-                              " be buffered for the case of a reconnect.")
+            self.logger.error("The exception event is set. The IRC action might not perform as it should! Messages will be buffered for the case of a reconnect.")
         text = TemplatingEngine.fill_template(paste, analyzer_name, template_string=self.template, matches=matches)
         self._send_message(text)

@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
 import logging
 from queue import Empty, Queue
 from threading import Event, Lock
 from time import sleep
 
-from pastepwn.util import start_thread, join_threads
+from pastepwn.util import join_threads, start_thread
 
 
-class ActionHandler(object):
+class ActionHandler:
     """Handler to execute all the actions, if an analyzer matches a paste"""
 
     def __init__(self, action_queue=None, exception_event=None, stop_event=None):
@@ -74,8 +72,8 @@ class ActionHandler(object):
 
     def _perform_action_wrapper(self, action, paste, analyzer, matches):
         """A wrapper around the perform method to catch exceptions"""
-        self.logger.debug("Performing action '{0}' on paste '{1}' matched by analyzer '{2}'!".format(action.name, paste.key, analyzer.identifier))
+        self.logger.debug(f"Performing action '{action.name}' on paste '{paste.key}' matched by analyzer '{analyzer.identifier}'!")
         try:
             action.perform(paste, analyzer.identifier, matches)
-        except Exception as e:
-            self.logger.error("While performing the action '{0}' the following exception occurred: '{1}'".format(action.name, e))
+        except Exception:
+            self.logger.exception(f"While performing the action '{action.name}' an exception occurred")

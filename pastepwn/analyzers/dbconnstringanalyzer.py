@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 from .regexanalyzer import RegexAnalyzer
 
 
 class DBConnAnalyzer(RegexAnalyzer):
     """Analyzer to match on email addresses via regex"""
+
     name = "DBConnAnalyzer"
 
     def __init__(self, actions):

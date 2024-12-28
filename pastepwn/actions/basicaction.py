@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
-
-class BasicAction(object):
+class BasicAction:
     """Base class for actions which can be performed on pastes"""
+
     name = "BasicAction"
 
     def __init__(self):

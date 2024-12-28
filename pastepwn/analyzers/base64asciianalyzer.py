@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
-from .base64analyzer import Base64Analyzer
-from base64 import b64decode
 import binascii
+from base64 import b64decode
+
+from .base64analyzer import Base64Analyzer
 
 
 class Base64AsciiAnalyzer(Base64Analyzer):
     """Analyzer to match base64 strings which decode to valid ASCII"""
+
     name = "Base64AsciiAnalyzer"
 
     def __init__(self, actions, min_len=1, decode=False):

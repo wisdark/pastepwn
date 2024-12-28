@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 from threading import Lock
 
@@ -6,7 +5,7 @@ from requests import Session, utils
 from requests.exceptions import Timeout
 
 
-class Request(object):
+class Request:
     _instance = None
     _initialized = False
     _lock = Lock()
@@ -26,22 +25,22 @@ class Request(object):
             self.session = Session()
             self.proxies = proxies
             self.headers = headers
-            self.logger.info("Using the following custom proxies: {}".format(proxies))
-            self.logger.info("Using the following system proxies: {}".format(utils.get_environ_proxies("https://example.com")))
+            self.logger.info("Using the following custom proxies: %s", proxies)
+            system_proxies = utils.get_environ_proxies("https://example.com")
+            self.logger.info("Using the following system proxies: %s", system_proxies)
             Request._initialized = True
 
     def _request_wrapper(self, data, timeout, *args, **kwargs):
-        headers = {
-            "User-Agent": "pastepwn (https://github.com/d-Rickyy-b/pastepwn)"
-            }
+        headers = {"User-Agent": "pastepwn (https://github.com/d-Rickyy-b/pastepwn)"}
 
         if self.headers is not None:
             headers.update(self.headers)
 
         try:
-            response = self.session.request(headers=headers, proxies=self.proxies, data=data, timeout=timeout, *args, **kwargs)
+            response = self.session.request(*args, headers=headers, proxies=self.proxies, data=data, timeout=timeout, **kwargs)
         except Timeout:
-            self.logger.warning("Timeout while requesting {0}!".format(kwargs.get("url")))
+            url = kwargs.get("url")
+            self.logger.warning("Timeout while requesting %s!", url)
             return ""
 
         return response.content.decode("utf-8")

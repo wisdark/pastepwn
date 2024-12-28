@@ -1,15 +1,17 @@
-# -*- coding: utf-8 -*-
 import re
-from .basicanalyzer import BasicAnalyzer
+
 from pastepwn.util import listify
+
+from .basicanalyzer import BasicAnalyzer
 
 
 class ExactWordAnalyzer(BasicAnalyzer):
     """Analyzer to match the content of a paste by words"""
+
     name = "ExactWordAnalyzer"
 
     def __init__(self, actions, words, blacklist=None, case_sensitive=False):
-        super().__init__(actions, "{0} ({1})".format(self.name, words))
+        super().__init__(actions, f"{self.name} ({words})")
 
         self.words = listify(words)
         self.blacklist = blacklist or []
@@ -25,7 +27,7 @@ class ExactWordAnalyzer(BasicAnalyzer):
             text = text.lower()
             blacklist = [word.lower() for word in blacklist]
 
-        return any((self._word_in_text(word, text) for word in blacklist))
+        return any(self._word_in_text(word, text) for word in blacklist)
 
     def add_word(self, word):
         """
@@ -54,5 +56,5 @@ class ExactWordAnalyzer(BasicAnalyzer):
         return [word for word in words if self._word_in_text(word, paste_content)]
 
     def _word_in_text(self, word, text):
-        pattern = r"\b{0}\b".format(word)
+        pattern = rf"\b{word}\b"
         return re.search(pattern, text) is not None

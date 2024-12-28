@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import unittest
 from unittest import mock
 
@@ -6,7 +5,6 @@ from pastepwn.analyzers.ipv4addressanalyzer import IPv4AddressAnalyzer
 
 
 class TestIPv4AddressAnalyzer(unittest.TestCase):
-
     def setUp(self):
         self.analyzer = IPv4AddressAnalyzer([])
         self.paste = mock.Mock()

@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 from .regexanalyzer import RegexAnalyzer
 
 
 class SteamKeyAnalyzer(RegexAnalyzer):
     """Analyzer to match steam keys via regex."""
+
     name = "SteamKeyAnalyzer"
 
     def __init__(self, actions):

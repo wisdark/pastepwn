@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 import mysql.connector
@@ -7,30 +6,16 @@ from .abstractdb import AbstractDB
 
 
 class MysqlDB(AbstractDB):
-
     def __init__(self, ip="127.0.0.1", port=3306, unix_socket=None, dbname="pastepwn", username=None, password=None, timeout=10):
         super().__init__()
         self.logger = logging.getLogger(__name__)
-        self.logger.debug("Initializing MySQLDB - {0}:{1}".format(ip, port))
+        self.logger.debug(f"Initializing MySQLDB - {ip}:{port}")
 
         # https://dev.mysql.com/doc/connector-python/en/connector-python-connectargs.html
         if unix_socket:
-            self.db = mysql.connector.connect(
-                host=ip,
-                user=username,
-                passwd=password,
-                unix_socket=unix_socket,
-                connection_timeout=timeout
-                )
+            self.db = mysql.connector.connect(host=ip, user=username, passwd=password, unix_socket=unix_socket, connection_timeout=timeout)
         else:
-            self.db = mysql.connector.connect(
-                host=ip,
-                port=port,
-                user=username,
-                passwd=password,
-                database=dbname,
-                connection_timeout=timeout
-                )
+            self.db = mysql.connector.connect(host=ip, port=port, user=username, passwd=password, database=dbname, connection_timeout=timeout)
 
         self.cursor = self.db.cursor()
         self._create_tables()
@@ -55,20 +40,11 @@ class MysqlDB(AbstractDB):
         self.db.commit()
 
     def _insert_data(self, paste):
-        self.cursor.execute("INSERT INTO `pastes` (`key`, `title`, `user`, `size`, `date`, `expire`, `syntax`, `scrape_url`, `full_url`, `body`) "
-                            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
-                            (paste.key,
-                             paste.title,
-                             paste.user,
-                             paste.size,
-                             paste.date,
-                             paste.expire,
-                             paste.syntax,
-                             paste.scrape_url,
-                             paste.full_url,
-                             paste.body
-                             )
-                            )
+        self.cursor.execute(
+            "INSERT INTO `pastes` (`key`, `title`, `user`, `size`, `date`, `expire`, `syntax`, `scrape_url`, `full_url`, `body`) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
+            (paste.key, paste.title, paste.user, paste.size, paste.date, paste.expire, paste.syntax, paste.scrape_url, paste.full_url, paste.body),
+        )
         self.db.commit()
 
     def _get_data(self, key, value):
@@ -82,12 +58,12 @@ class MysqlDB(AbstractDB):
         return self.cursor.execute("SELECT count(*) FROM pastes")
 
     def store(self, paste):
-        self.logger.debug("Storing paste {0}".format(paste.key))
+        self.logger.debug(f"Storing paste {paste.key}")
 
         try:
             self._insert_data(paste)
         except Exception as e:
-            self.logger.debug("Exception '{0}'".format(e))
+            self.logger.debug(f"Exception '{e}'")
 
     def get(self, key):
         return self._get_data("key", key)

@@ -1,15 +1,16 @@
-# -*- coding: utf-8 -*-
 import re
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from pastepwn.util import TemplatingEngine
+
 from .basicaction import BasicAction
 
 
 class EmailAction(BasicAction):
     """This action sends out an e-mail to the receiver containing the paste, when executed"""
+
     name = "EmailAction"
 
     def __init__(self, username, password, receiver, hostname, port=465, template=None):
@@ -17,12 +18,13 @@ class EmailAction(BasicAction):
         mail_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
         if username is None or not re.match(mail_regex, username):
             raise ValueError("Invalid username !")
-        else:
-            self.username = username
+
+        self.username = username
+
         if receiver is None or not re.match(mail_regex, receiver):
             raise ValueError("Invalid reciever address !")
-        else:
-            self.receiver = receiver
+
+        self.receiver = receiver
         self.password = password
         self.hostname = hostname
         self.port = port
@@ -40,7 +42,7 @@ class EmailAction(BasicAction):
         email = MIMEMultipart()
         email["From"] = self.username
         email["To"] = self.receiver
-        email["Subject"] = "Paste matched by pastepwn via analyzer '{}'".format(analyzer_name)
+        email["Subject"] = f"Paste matched by pastepwn via analyzer '{analyzer_name}'"
         email.attach(MIMEText(text, "plain"))
 
         # TODO there should be a way to use starttls - check https://realpython.com/python-send-email/

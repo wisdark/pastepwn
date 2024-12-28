@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
 import pathlib
 
 from pastepwn.util import TemplatingEngine
+
 from .basicaction import BasicAction
 
 
 class SaveFileAction(BasicAction):
     """Action to save each paste as a file named '<pasteID>.txt'"""
+
     name = "SaveFileAction"
 
     def __init__(self, path, file_ending=".txt", template=None):
@@ -26,7 +27,7 @@ class SaveFileAction(BasicAction):
     def _remove_prefix(input_string, prefix):
         """Remove a prefix from a certain string (e.g. remove '.' as prefix from '.txt')"""
         if input_string.startswith(prefix):
-            return input_string[len(prefix):]
+            return input_string[len(prefix) :]
         return input_string
 
     def get_file_content(self, paste, analyzer_name, matches):
@@ -49,7 +50,7 @@ class SaveFileAction(BasicAction):
         if self.file_ending == "":
             file_name = str(paste.key)
         else:
-            file_name = "{0}.{1}".format(paste.key, self.file_ending)
+            file_name = f"{paste.key}.{self.file_ending}"
 
         file_path = self.path / file_name
         content = self.get_file_content(paste, analyzer_name, matches)

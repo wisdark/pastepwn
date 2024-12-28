@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 from .regexanalyzer import RegexAnalyzer
 
 
 class DatabaseDumpAnalyzer(RegexAnalyzer):
     """Analyzer to match database dump"""
+
     name = "DatabaseDumpAnalyzer"
 
     def __init__(self, actions):

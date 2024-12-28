@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import unittest
 from unittest.mock import Mock, patch
 
@@ -6,7 +5,6 @@ from pastepwn.actions.savefileaction import SaveFileAction
 
 
 class TestSaveFileAction(unittest.TestCase):
-
     def setUp(self):
         """Sets up the test case"""
         self.action = SaveFileAction(path="")

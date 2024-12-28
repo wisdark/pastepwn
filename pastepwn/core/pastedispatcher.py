@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
 import logging
 from queue import Empty, Queue
 from threading import Event, Lock
 from time import sleep
 
-from pastepwn.util import start_thread, join_threads
+from pastepwn.util import join_threads, start_thread
 
 
-class PasteDispatcher(object):
+class PasteDispatcher:
     """The PasteDispatcher dispatches the downloaded pastes to the analyzers"""
 
     def __init__(self, paste_queue, action_queue=None, exception_event=None):
@@ -73,7 +71,7 @@ class PasteDispatcher(object):
             start_thread(self._process_paste, "process_paste", paste=paste, exception_event=self.__exception_event)
 
     def _process_paste(self, paste):
-        self.logger.debug("Analyzing Paste: {0}".format(paste.key))
+        self.logger.debug(f"Analyzing Paste: {paste.key}")
         for analyzer in self.analyzers:
             matches = analyzer.match(paste)
 

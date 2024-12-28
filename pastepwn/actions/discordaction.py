@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 import asyncio
 import json
 import logging
 import sys
 
-from pastepwn.util import Request
-from pastepwn.util import TemplatingEngine
+from pastepwn.util import Request, TemplatingEngine
+
 from .basicaction import BasicAction
 
 websockets_available = True
@@ -18,6 +17,7 @@ except ImportError:
 
 class DiscordAction(BasicAction):
     """Action to send a Discord message to a certain webhook or channel."""
+
     name = "DiscordAction"
 
     def __init__(self, webhook_url=None, token=None, channel_id=None, template=None):
@@ -47,7 +47,7 @@ class DiscordAction(BasicAction):
         self.logger = logging.getLogger(__name__)
         self.bot_available = True
 
-        if websockets is None or not websockets_available or (sys.version_info.major == 3 and sys.version_info.minor >= 10):
+        if websockets is None or not websockets_available or (sys.version_info >= (3, 10)):
             self.logger.warning("Could not import 'websockets' module. So you can only use webhooks for discord.")
             self.bot_available = False
 
@@ -73,12 +73,13 @@ class DiscordAction(BasicAction):
         if websockets is None:
             raise ImportError("Couldn't import websockets!")
 
-        socket = await websockets.connect("{0}/?v=6&encoding=json".format(ws_url))
+        socket = await websockets.connect(f"{ws_url}/?v=6&encoding=json")
         try:
             # Receive Hello
             hello_str = await socket.recv()
             hello = json.loads(hello_str)
-            if hello.get("op") != 10:
+            hello_opcode = 10
+            if hello.get("op") != hello_opcode:
                 self.logger.warning("[ws] Expected Hello payload but received %s", hello_str)
 
             # Send heartbeat and receive ACK
@@ -92,14 +93,7 @@ class DiscordAction(BasicAction):
                 self.logger.warning("[ws] Expected Heartbeat ACK payload but received %s", ack_str)
 
             # Identify
-            payload = {
-                "token": self.token,
-                "properties": {
-                    "$os": sys.platform,
-                    "$browser": "pastepwn",
-                    "$device": "pastepwn"
-                    }
-                }
+            payload = {"token": self.token, "properties": {"$os": sys.platform, "$browser": "pastepwn", "$device": "pastepwn"}}
             await socket.send(json.dumps({"op": 2, "d": payload}))
 
             # Receive READY event
@@ -119,7 +113,7 @@ class DiscordAction(BasicAction):
         # Call Get Gateway Bot to get the websocket URL
         # https://discordapp.com/developers/docs/reference#authentication
         r = Request()
-        r.headers = {"Authorization": "Bot {}".format(self.token)}
+        r.headers = {"Authorization": f"Bot {self.token}"}
         res = json.loads(r.get("https://discordapp.com/api/gateway/bot"))
         ws_url = res.get("url")
 
@@ -139,8 +133,8 @@ class DiscordAction(BasicAction):
             url = self.webhook_url
         else:
             # Send through Discord bot API (header-based authentication)
-            url = "https://discordapp.com/api/channels/{0}/messages".format(self.channel_id)
-            r.headers = {"Authorization": "Bot {}".format(self.token)}
+            url = f"https://discordapp.com/api/channels/{self.channel_id}/messages"
+            r.headers = {"Authorization": f"Bot {self.token}"}
 
         res = r.post(url, {"content": text})
         if res == "":

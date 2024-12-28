@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import unittest
 from unittest.mock import Mock
 
@@ -6,7 +5,6 @@ from pastepwn.util.listify import listify
 
 
 class ListifyTest(unittest.TestCase):
-
     def test_None(self):
         self.assertEqual([], listify(None), "Listify did not return empty list!")
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import re
 
 from .basicanalyzer import BasicAnalyzer
@@ -6,6 +5,7 @@ from .basicanalyzer import BasicAnalyzer
 
 class RegexAnalyzer(BasicAnalyzer):
     """Analyzer to match the content of a paste via regular expressions"""
+
     name = "RegexAnalyzer"
 
     def __init__(self, actions, regex, flags=0):

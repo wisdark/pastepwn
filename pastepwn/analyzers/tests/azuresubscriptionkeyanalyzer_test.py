@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import unittest
 from unittest import mock
 
@@ -6,7 +5,6 @@ from pastepwn.analyzers.azuresubscriptionkeyanalyzer import AzureSubscriptionKey
 
 
 class TestAzureSubscriptionKeyAnalyzer(unittest.TestCase):
-
     def setUp(self):
         self.analyzer = AzureSubscriptionKeyAnalyzer(None)
         self.paste = mock.Mock()
@@ -39,8 +37,7 @@ class TestAzureSubscriptionKeyAnalyzer(unittest.TestCase):
 
     def test_multiple(self):
         """Test if multiple matches are recognized"""
-        self.paste.body = "There are multiple keys: a32324343543bcdea32324343543bcde, " \
-                          "aaaand also aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!"
+        self.paste.body = "There are multiple keys: a32324343543bcdea32324343543bcde, aaaand also aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!"
         match = self.analyzer.match(self.paste)
         self.assertTrue(match)
         self.assertEqual("a32324343543bcdea32324343543bcde", match[0])

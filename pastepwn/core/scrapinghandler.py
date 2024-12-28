@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
-
 import logging
 from queue import Queue
-from threading import Lock, Event
+from threading import Event, Lock
 
 from pastepwn.util import start_thread
 
 
-class ScrapingHandler(object):
+class ScrapingHandler:
     """Class to handle all the given scrapers to fetch pastes from different sources"""
 
     def __init__(self, paste_queue=None, exception_event=None):
@@ -46,6 +44,8 @@ class ScrapingHandler(object):
                 # Return the update queue so the main thread can insert updates
                 return self.paste_queue
 
+        return None
+
     def stop(self):
         """Stops scraping pastes"""
         with self.__lock:
@@ -61,8 +61,8 @@ class ScrapingHandler(object):
     def _join_threads(self):
         """End all threads and join them back into the main thread"""
         for thread in self.__threads:
-            self.logger.debug("Joining thread {0}".format(thread.name))
+            self.logger.debug(f"Joining thread {thread.name}")
             thread.join()
-            self.logger.debug("Thread {0} has ended".format(thread.name))
+            self.logger.debug(f"Thread {thread.name} has ended")
 
         self.__threads = []

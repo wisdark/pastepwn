@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
 import hashlib
 import re
+
 from .regexanalyzer import RegexAnalyzer
 
 
 class HashAnalyzer(RegexAnalyzer):
     """Analyzer to match multiple hashes of user-given passwords."""
+
     name = "HashAnalyzer"
 
     def __init__(self, actions, passwords, algorithms=None):
@@ -45,5 +46,5 @@ class HashAnalyzer(RegexAnalyzer):
                 hashes.append(digest)
 
         # Build regex
-        regex = r"\b(%s)\b" % "|".join(hashes)
+        regex = r"\b({})\b".format("|".join(hashes))
         super().__init__(actions, regex, re.IGNORECASE)
